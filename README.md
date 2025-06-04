@@ -12,7 +12,7 @@ A scalable, privacy-compliant URL shortener and universal linking system with ad
 - [Database Schema](#database-schema)
 - [Key Algorithms](#key-algorithms)
 - [Project Structure](#project-structure)
-- [Getting Started](#getting-started)
+- [Setting Up Project Locally](#setting-up-project-locally)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -91,4 +91,177 @@ This project provides a modern, robust platform for:
 ---
 
 ## Project Structure
+
+*(Structure details omitted for now. Can be added here if needed.)*
+
+---
+
+## Setting Up Project Locally
+
+To run the project on your local machine, follow the steps below:
+
+### Prerequisites
+
+Install the following tools:
+
+1. **Node.js** (v18 or later):  
+   [https://nodejs.org/en/download](https://nodejs.org/en/download)
+
+    ```bash
+     # Using Node Version Manager (Recommended)
+     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+     nvm install --lts
+
+     #Verify
+     node -v
+     npm -v
+     ```
+
+
+
+2. **MongoDB Community Edition (6.0)**:
+
+   - **macOS**:
+     ```bash
+     brew tap mongodb/brew
+     brew install mongodb-community@6.0
+     brew services start mongodb-community@6.0
+
+     #Verify
+     mongosh --eval 'db.runCommand({ connectionStatus: 1 })'
+     ```
+
+   - **Windows/Linux**:  
+     Follow the official installation guide: [MongoDB Manual](https://www.mongodb.com/docs/manual/installation/)
+
+3. **Redis**:
+
+   - **macOS**:
+     ```bash
+     brew install redis
+     brew services start redis
+     ```
+
+   - **Windows**:
+     Use Redis for Windows from Microsoft Archive or WSL: [Redis Windows Guide](https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis-on-windows/)
+
+   - **Linux**:
+     ```bash
+     sudo apt update
+     sudo apt install redis-server
+     sudo systemctl enable redis
+     sudo systemctl start redis
+     ```
+
+---
+
+### Project Setup
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/Godssidekick1/Docquity.git
+   cd Docquity
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+3. **Environment Variables**:  
+   Create a `.env` file in the root directory with the following values:
+
+   ```env
+   PORT=8080
+   MONGO_URI=mongodb://localhost:27017/urlshortener
+   REDIS_URL=redis://localhost:6379
+   ```
+
+---
+
+### Running the App
+
+Before starting the server, ensure MongoDB and Redis are running:
+
+- **macOS**:
+```bash
+brew services start mongodb-community@6.0
+brew services start redis
+```
+```bash
+# macOS/Linux (if not using brew services)
+mongod --config /usr/local/etc/mongod.conf
+redis-server
+```
+
+- **Windows**:
+Start MongoDB and Redis using their respective terminals or services:
+```powershell
+net start MongoDB
+redis-server
+```
+
+Then start the development server:
+```bash
+node index.js
+```
+
+---
+
+### Health Check
+
+To confirm your server is running:
+```bash
+curl http://localhost:8080/health
+```
+
+---
+
+### Initialization & Testing
+
+#### Initialize the DB (if required):
+```bash
+npm run init
+```
+
+#### Fetch existing short URLs:
+```bash
+curl http://localhost:8080/shorten
+```
+
+---
+
+###  Test Examples with `curl`
+
+** Create a new short URL**:
+```bash
+curl -X POST http://localhost:8080/shorten \
+  -H "Content-Type: application/json" \
+  -d '{"short_code":"xyz123","original_url":"https://openai.com"}'
+```
+
+** Get all shortened URLs**:
+```bash
+curl http://localhost:8080/shorten
+```
+
+** Update a shortened URL**:
+```bash
+curl -X PUT http://localhost:8080/shorten/<id> \
+  -H "Content-Type: application/json" \
+  -d '{"original_url": "https://newsite.com"}'
+```
+
+** Delete a shortened URL**:
+```bash
+curl -X DELETE http://localhost:8080/shorten/<id>
+```
+
+** Redirect using short code**:
+```bash
+curl -i http://localhost:8080/xyz123
+```
+
+---
+
 
