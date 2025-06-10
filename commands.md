@@ -52,31 +52,26 @@ curl -X POST http://localhost:3000/api/items -H "Content-Type: application/json"
 curl -X POST http://localhost:3000/api/items -H "Content-Type: application/json" -d "{\"name\":\"Manchester City\",\"description\":\"2\"}"
 
 
-text
 
 ### **Get All Clubs**
 
 curl http://localhost:3000/api/items
 
-text
 
 ### **Get One Club by ID**
 
 curl http://localhost:3000/api/items/<item_id>
 
-text
 
 ### **Update a Club**
 
 curl -X PUT http://localhost:3000/api/items/<item_id> -H "Content-Type: application/json" -d "{\"name\":\"Updated Club\",\"description\":\"New Value\"}"
 
-text
 
 ### **Delete a Club**
 
 curl -X DELETE http://localhost:3000/api/items/<item_id>
 
-text
 
 ---
 
