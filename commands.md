@@ -39,7 +39,11 @@
 
 ##  Example: Football Clubs CRUD (Top 4 Premier League by European Titles)
 
-http://localhost:3000/shorten --> link to post
+http://localhost:3000/shorten --> url to post
+
+http://localhost:3000/api/health --> url for healthcheck
+
+http://localhost:3000/api/items --> url for item list
 
 ### **Create Clubs**
 
