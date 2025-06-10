@@ -39,12 +39,18 @@
 
 ##  Example: Football Clubs CRUD (Top 4 Premier League by European Titles)
 
+http://localhost:3000/shorten --> link to post
+
 ### **Create Clubs**
 
-curl -X POST http://localhost:3000/api/items -H "Content-Type: application/json" -d "{"name":"Liverpool","description":"14"}"
-curl -X POST http://localhost:3000/api/items -H "Content-Type: application/json" -d "{"name":"Manchester United","description":"6"}"
-curl -X POST http://localhost:3000/api/items -H "Content-Type: application/json" -d "{"name":"Chelsea","description":"6"}"
-curl -X POST http://localhost:3000/api/items -H "Content-Type: application/json" -d "{"name":"Manchester City","description":"2"}"
+curl -X POST http://localhost:3000/api/items -H "Content-Type: application/json" -d "{\"name\":\"Liverpool\",\"description\":\"14\"}"
+
+curl -X POST http://localhost:3000/api/items -H "Content-Type: application/json" -d "{\"name\":\"Manchester United\",\"description\":\"6\"}"
+
+curl -X POST http://localhost:3000/api/items -H "Content-Type: application/json" -d "{\"name\":\"Chelsea\",\"description\":\"6\"}"
+
+curl -X POST http://localhost:3000/api/items -H "Content-Type: application/json" -d "{\"name\":\"Manchester City\",\"description\":\"2\"}"
+
 
 text
 
@@ -62,7 +68,7 @@ text
 
 ### **Update a Club**
 
-curl -X PUT http://localhost:3000/api/items/<item_id> -H "Content-Type: application/json" -d "{"name":"Updated Club","description":"New Value"}"
+curl -X PUT http://localhost:3000/api/items/<item_id> -H "Content-Type: application/json" -d "{\"name\":\"Updated Club\",\"description\":\"New Value\"}"
 
 text
 
