@@ -212,7 +212,7 @@ node index.js
 
 To confirm your server is running:
 ```bash
-curl http://localhost:8080/health
+curl http://localhost:8080/health/healthcheck
 ```
 
 ---

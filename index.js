@@ -1,11 +1,12 @@
 const express = require('express');
-const mongoose = require('mongoose');
-require('dotenv').config();
+const mongoose = require('mongoose');  
+require('dotenv').config(); // Load environment variables from .env file, import mongoose and express
 
-const userRoutes = require('./routes/userRoutes');
-const shortUrlRoutes = require('./routes/shortUrlRoutes');
-const redisClient = require('./services/redisClient');
-const { redirectShortUrl } = require('./controllers/shortUrlController');
+const userRoutes = require('./routes/userRoutes'); // Import user routes
+const shortUrlRoutes = require('./routes/shortUrlRoutes'); // Import short url routes
+const healthRoutes = require('./routes/healthRoutes');
+const redisClient = require('./services/redisClient'); // Import redis client
+const { redirectShortUrl } = require('./controllers/shortUrlController'); // Import redirect short url controller
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -24,17 +25,11 @@ mongoose.connect(process.env.MONGO_URI, {
   await redisClient.connect();
   console.log('✅ Redis connected');
 
-  app.get('/healthcheck', async (req, res) => {
-    const mongoStatus = mongoose.connection.readyState === 1 ? 'up' : 'down';
-    const redisStatus = redisClient.isOpen ? 'up' : 'down';
-    res.status(200).json({ status: 'ok', mongo: mongoStatus, redis: redisStatus });
-  });
-
-  app.use('/shorten', shortUrlRoutes);
-  app.use('/', userRoutes);
-
-  // ⚠️ This must be last
-  app.get('/:short_code', redirectShortUrl);
+  // Use routes
+  app.use('/health', healthRoutes);
+  app.use('/shorten', shortUrlRoutes); // Use short url routes
+  app.use('/', userRoutes); // Use user routes
+  app.get('/:short_code', redirectShortUrl); // Redirect short url
 
   app.get('/', (req, res) => {
     res.send('✅ API is up and running!');
