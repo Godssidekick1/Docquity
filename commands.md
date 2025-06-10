@@ -8,7 +8,7 @@
 - Use only required npm packages; remove unused dependencies regularly.
 - For URL shortening, use `nanoid` v3.x if using CommonJS.
 
-## 🛠️ API Development & Testing
+##  API Development & Testing
 
 - All endpoints must be tested with both Postman and curl[1].
 - Use RESTful conventions: `/api/items` for CRUD, `/shorten` for URL shortening.
@@ -16,7 +16,7 @@
 - Log errors and important events for debugging.
 - Use MongoDB Compass to visually verify database changes.
 
-## 🗃 Database
+##  Database
 
 - Use MongoDB (local for dev, remote for prod if needed).
 - Keep database names consistent in case (e.g., `healthCheck` vs `healthcheck`).
