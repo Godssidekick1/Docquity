@@ -12,13 +12,14 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/healthcheck",
+					"raw": "http://localhost:8080/health/healthcheck",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"health",
 						"healthcheck"
 					]
 				}
@@ -89,7 +90,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"original_url\": \"https://www.youtube.com/watch?v=xvFZjo5PgG0&t=3s&ab_channel=Duran\",\n  \"user_id\": \"123\",\n  \"custom_alias\": \"short\"\n}",
+					"raw": "{\n  \"original_url\": \"https://example.com\",\n  \"user_id\": \"123\",\n  \"custom_alias\": \"short\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
