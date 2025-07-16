@@ -1,6 +1,5 @@
 const { nanoid } = require('nanoid');
 const ShortUrl = require('../models/ShortUrl');
-const mongoose = require('mongoose');
 
 exports.createShortUrl = async (req, res) => {
   try {
@@ -13,9 +12,6 @@ exports.createShortUrl = async (req, res) => {
       });
     }
 
-    console.log('appContext:', appContext);
-    console.log('appContext._id:', appContext._id);
-
     // Read required fields from the request body
     const { original_url, custom_alias, expires_at, metadata } = req.body;
 
@@ -27,15 +23,14 @@ exports.createShortUrl = async (req, res) => {
       });
     }
 
-    // Always generate short_code with nanoid
-    const short_code = nanoid(8);
+    // Generate a short code
+    const short_code = custom_alias || nanoid(8); // Use custom alias if provided, otherwise generate one
 
-    // Optionally, store custom_alias separately if needed
+    // Create the short URL document
     const shortUrl = new ShortUrl({
-      app_id: appContext._id,
+      app_id: appContext._id, // Use the authenticated app's ID
       original_url,
       short_code,
-      custom_alias, // only if your schema supports this field
       expires_at,
       metadata,
     });
@@ -107,8 +102,3 @@ exports.redirectShortUrl = async (req, res) => {
     res.status(500).send('Server error');
   }
 };
-
-// Updated ShortUrl schema to include app_id field
-ShortUrl.schema.add({
-  app_id: { type: mongoose.Schema.Types.ObjectId, ref: 'App', required: true }
-});

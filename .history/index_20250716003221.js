@@ -111,46 +111,16 @@ mongoose.connect(process.env.MONGO_URI, {
 // Short URL creation logic
 exports.createShortUrl = async (req, res) => {
   try {
+    console.log('In createShortUrl, req.appContext:', req.appContext);
     const appContext = req.appContext;
-    console.log('appContext:', appContext);
-    console.log('appContext._id:', appContext._id);
-
-    const { original_url, custom_alias, expires_at, metadata } = req.body;
-    if (!original_url) {
-      return res.status(400).json({
-        error: 'Validation failed',
-        message: 'The \"original_url\" field is required.',
+    if (!appContext) {
+      return res.status(401).json({
+        error: 'Unauthorized',
+        message: 'App authentication is required to create a short URL.',
       });
     }
-
-    const short_code = custom_alias || nanoid(8);
-
-    const shortUrl = new ShortUrl({
-      app_id: mongoose.Types.ObjectId(appContext._id),
-      original_url,
-      short_code,
-      expires_at,
-      metadata,
-    });
-
-    await shortUrl.save();
-
-    return res.status(201).json({
-      message: 'Short URL created successfully',
-      shortUrl: {
-        app_id: shortUrl.app_id,
-        original_url: shortUrl.original_url,
-        short_code: shortUrl.short_code,
-        full_short_url: `http://localhost:8080/shorten/${shortUrl.short_code}`,
-        expires_at: shortUrl.expires_at,
-        metadata: shortUrl.metadata,
-      },
-    });
+    // ...rest of your code...
   } catch (error) {
-    console.error('Error creating short URL:', error.message);
-    return res.status(500).json({
-      error: 'Internal Server Error',
-      message: 'An unexpected error occurred while creating the short URL.',
-    });
+    // ...error handling...
   }
 };

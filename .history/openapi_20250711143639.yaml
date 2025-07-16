@@ -30,10 +30,10 @@ paths:
 
   /shorten:
     post:
-      summary: Create a new short URL
-      description: Creates a new shortened URL with optional custom alias and required authentication
+      summary: Create a short URL
+      description: Allows an authenticated app to create a short URL.
       security:
-        - bearerAuth: []
+        - bearerAuth: [] # Indicates that this endpoint requires authentication
       requestBody:
         required: true
         content:
@@ -45,21 +45,22 @@ paths:
               properties:
                 original_url:
                   type: string
-                  format: uri
-                  example: "https://example.com"
+                  description: The original URL to be shortened.
+                  example: https://example.com
                 custom_alias:
                   type: string
-                  example: "example-alias"
+                  description: A custom alias for the short URL (optional).
+                  example: example123
                 expires_at:
                   type: string
                   format: date-time
-                  example: "2025-12-31T23:59:59Z"
+                  description: The expiration date for the short URL (optional).
+                  example: 2025-12-31T23:59:59Z
                 metadata:
                   type: object
-                  properties:
-                    source:
-                      type: string
-                      example: "web"
+                  description: Additional metadata for the short URL (optional).
+                  example:
+                    source: web
       responses:
         '201':
           description: Short URL created successfully
@@ -70,25 +71,64 @@ paths:
                 properties:
                   message:
                     type: string
+                    example: Short URL created successfully
                   shortUrl:
                     type: object
                     properties:
                       app_id:
                         type: string
+                        description: The ID of the app that created the short URL.
+                        example: 64b7c9f5e4b0c2a1d8f9e123
                       original_url:
                         type: string
+                        description: The original URL.
+                        example: https://example.com
                       short_code:
                         type: string
+                        description: The generated or custom short code.
+                        example: example123
                       full_short_url:
                         type: string
+                        description: The full short URL.
+                        example: http://localhost:8080/example123
                       expires_at:
                         type: string
+                        format: date-time
+                        description: The expiration date of the short URL.
+                        example: 2025-12-31T23:59:59Z
                       metadata:
                         type: object
+                        description: Additional metadata for the short URL.
+                        example:
+                          source: web
         '400':
           description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Validation failed
+                  message:
+                    type: string
+                    example: The "original_url" field is required.
         '401':
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Unauthorized
+                  message:
+                    type: string
+                    example: Invalid app token.
+        '500':
+          description: Internal server error
 
     get:
       summary: Get all short URLs

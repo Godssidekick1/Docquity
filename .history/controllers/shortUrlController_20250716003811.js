@@ -27,15 +27,15 @@ exports.createShortUrl = async (req, res) => {
       });
     }
 
-    // Always generate short_code with nanoid
-    const short_code = nanoid(8);
+    // Generate a short code
+    const short_code = custom_alias || nanoid(8); // Use custom alias if provided, otherwise generate one
 
-    // Optionally, store custom_alias separately if needed
+    // Create the short URL document
+    const appId = mongoose.Types.ObjectId(appContext._id);
     const shortUrl = new ShortUrl({
-      app_id: appContext._id,
+      app_id: appId,
       original_url,
       short_code,
-      custom_alias, // only if your schema supports this field
       expires_at,
       metadata,
     });

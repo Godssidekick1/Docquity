@@ -2,25 +2,17 @@
 const mongoose = require('mongoose');
 
 
-// const shortUrlSchema = new mongoose.Schema({
-//   _id: String, // Use nanoid as custom ID
-//   short_code: String, // Will be custom_alias + '-' + _id
-//   original_url: { type: String, required: true },
-//   user_id: String,
-//   created_at: { type: Date, default: Date.now },
-//   expires_at: Date,
-//   metadata: {
-//     source: String
-//   },
-//   custom_alias: String
-// });
-
 const shortUrlSchema = new mongoose.Schema({
+  _id: String, // Use nanoid as custom ID
+  short_code: String, // Will be custom_alias + '-' + _id
   original_url: { type: String, required: true },
-  short_code: { type: String, required: true, unique: true },
-  expires_at: { type: Date },
-  metadata: { type: mongoose.Schema.Types.Mixed },
-  app_id: { type: mongoose.Schema.Types.ObjectId, ref: 'App', required: true }
+  user_id: String,
+  created_at: { type: Date, default: Date.now },
+  expires_at: Date,
+  metadata: {
+    source: String
+  },
+  custom_alias: String
 });
 
 module.exports = mongoose.model('ShortUrl', shortUrlSchema);
