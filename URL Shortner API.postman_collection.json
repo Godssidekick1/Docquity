@@ -12,14 +12,13 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/health/healthcheck",
+					"raw": "http://localhost:8080/healthcheck",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
-						"health",
 						"healthcheck"
 					]
 				}

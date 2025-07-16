@@ -1,0 +1,282 @@
+openapi: 3.0.0
+info:
+  title: URL Shortener API
+  version: 1.0.0
+  description: API for creating and managing shortened URLs
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+paths:
+  /healthcheck:
+    get:
+      summary: Check API health
+      description: Returns the health status of the API and its dependencies
+      responses:
+        '200':
+          description: Health check successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  mongo:
+                    type: string
+                  redis:
+                    type: string
+
+  /shorten:
+    post:
+      summary: Create a short URL
+      description: Allows an authenticated app to create a short URL.
+      security:
+        - bearerAuth: [] # Indicates that this endpoint requires authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - original_url
+              properties:
+                original_url:
+                  type: string
+                  description: The original URL to be shortened.
+                  example: https://example.com
+                custom_alias:
+                  type: string
+                  description: A custom alias for the short URL (optional).
+                  example: example123
+                expires_at:
+                  type: string
+                  format: date-time
+                  description: The expiration date for the short URL (optional).
+                  example: 2025-12-31T23:59:59Z
+                metadata:
+                  type: object
+                  description: Additional metadata for the short URL (optional).
+                  example:
+                    source: web
+      responses:
+        '201':
+          description: Short URL created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Short URL created successfully
+                  shortUrl:
+                    type: object
+                    properties:
+                      app_id:
+                        type: string
+                        description: The ID of the app that created the short URL.
+                        example: 64b7c9f5e4b0c2a1d8f9e123
+                      original_url:
+                        type: string
+                        description: The original URL.
+                        example: https://example.com
+                      short_code:
+                        type: string
+                        description: The generated or custom short code.
+                        example: example123
+                      full_short_url:
+                        type: string
+                        description: The full short URL.
+                        example: http://localhost:8080/example123
+                      expires_at:
+                        type: string
+                        format: date-time
+                        description: The expiration date of the short URL.
+                        example: 2025-12-31T23:59:59Z
+                      metadata:
+                        type: object
+                        description: Additional metadata for the short URL.
+                        example:
+                          source: web
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Validation failed
+                  message:
+                    type: string
+                    example: The "original_url" field is required.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Unauthorized
+                  message:
+                    type: string
+                    example: Invalid app token.
+        '500':
+          description: Internal server error
+
+    get:
+      summary: Get all short URLs
+      description: Retrieves all shortened URLs
+      responses:
+        '200':
+          description: List of short URLs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                    short_code:
+                      type: string
+                    original_url:
+                      type: string
+                    created_at:
+                      type: string
+                      format: date-time
+
+  /shorten/{id}:
+    put:
+      summary: Update a short URL
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                original_url:
+                  type: string
+                  format: uri
+                  example: "https://newexample.com"
+                expires_at:
+                  type: string
+                  format: date-time
+                  example: "2025-12-31T23:59:59Z"
+                metadata:
+                  type: object
+                  example: {}
+      responses:
+        '200':
+          description: Short URL updated successfully
+        '400':
+          description: Validation error
+        '404':
+          description: Short URL not found
+
+    delete:
+      summary: Delete a short URL
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Short URL deleted successfully
+        '404':
+          description: Short URL not found
+
+  /{short_code}:
+    get:
+      summary: Redirect to original URL
+      parameters:
+        - name: short_code
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '302':
+          description: Redirect to original URL
+        '404':
+          description: Short URL not found
+        '410':
+          description: Short URL has expired
+
+  /api/apps/register:
+    post:
+      summary: Register a new app
+      description: Allows a client to register a new app and receive a unique authentication token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - base_url
+              properties:
+                name:
+                  type: string
+                  description: The name of the app.
+                  example: MyApp
+                base_url:
+                  type: string
+                  description: The base URL of the app.
+                  example: https://myapp.com
+      responses:
+        '201':
+          description: App registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: The unique ID of the app.
+                    example: 64b7c9f5e4b0c2a1d8f9e123
+                  name:
+                    type: string
+                    description: The name of the app.
+                    example: MyApp
+                  base_url:
+                    type: string
+                    description: The base URL of the app.
+                    example: https://myapp.com
+                  token:
+                    type: string
+                    description: The unique authentication token for the app.
+                    example: a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Validation failed
+                  message:
+                    type: string
+                    example: Both "name" and "base_url" are required.
+        '500':
+          description: Internal server error

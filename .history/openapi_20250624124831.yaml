@@ -1,0 +1,194 @@
+openapi: 3.0.0
+info:
+  title: URL Shortener API
+  version: 1.0.0
+  description: API for creating and managing shortened URLs
+
+servers:
+    url: http://localhost:8080
+    description: Local development server
+
+paths:
+  /healthcheck:
+    get:
+      summary: Check API health
+      description: Returns the health status of the API and its dependencies
+      responses:
+        '200':
+          description: Health check successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  mongo:
+                    type: string
+                  redis:
+                    type: string
+
+  /shorten:
+    post:
+      summary: Create a new short URL
+      description: Creates a new shortened URL with optional custom alias
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - original_url
+              properties:
+                original_url:
+                  type: string
+                  format: uri
+                  example: https://example.com
+                user_id:
+                  type: string
+                  example: "123"
+                custom_alias:
+                  type: string
+                  minLength: 3
+                  example: "example"
+                expires_at:
+                  type: string
+                  format: date-time
+                  example: "2025-12-31T23:59:59Z"
+                metadata:
+                  type: object
+                  example: {}
+      responses:
+        '201':
+          description: Short URL created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "✅ Short URL created"
+                  shortUrl:
+                    type: object
+                    properties:
+                      short_code:
+                        type: string
+                        example: "abc123"
+                      original_url:
+                        type: string
+                        example: "https://example.com"
+                      full_short_url:
+                        type: string
+                        example: "http://localhost:8080/abc123"
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "❌ Validation failed"
+                  details:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        path:
+                          type: string
+                          example: "original_url"
+                        message:
+                          type: string
+                          example: "Invalid URL format"
+
+    get:
+      summary: Get all short URLs
+      description: Retrieves all shortened URLs
+      responses:
+        '200':
+          description: List of short URLs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                    short_code:
+                      type: string
+                    original_url:
+                      type: string
+                    created_at:
+                      type: string
+                      format: date-time
+
+  /shorten/{id}:
+    put:
+      summary: Update a short URL
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                original_url:
+                  type: string
+                  format: uri
+                  example: "https://newexample.com"
+                expires_at:
+                  type: string
+                  format: date-time
+                  example: "2025-12-31T23:59:59Z"
+                metadata:
+                  type: object
+                  example: {}
+      responses:
+        '200':
+          description: Short URL updated successfully
+        '400':
+          description: Validation error
+        '404':
+          description: Short URL not found
+
+    delete:
+      summary: Delete a short URL
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Short URL deleted successfully
+        '404':
+          description: Short URL not found
+
+  /{short_code}:
+    get:
+      summary: Redirect to original URL
+      parameters:
+        - name: short_code
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '302':
+          description: Redirect to original URL
+        '404':
+          description: Short URL not found
+        '410':
+          description: Short URL has expired 
