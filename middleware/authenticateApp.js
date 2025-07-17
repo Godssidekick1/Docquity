@@ -27,16 +27,6 @@ const authenticateApp = async (req, res, next) => {
     // Attach the app document to req.appContext
     req.appContext = app;
 
-    // Create a new ShortUrl instance
-    const { original_url, short_code, expires_at, metadata } = req.body; // Assuming these are provided in the request body
-    const shortUrl = new ShortUrl({
-      app_id: app._id, // This is correct
-      original_url,
-      short_code,
-      expires_at,
-      metadata,
-    });
-
     // Pass control to the next middleware or route handler
     next();
   } catch (error) {

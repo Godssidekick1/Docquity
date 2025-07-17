@@ -16,11 +16,12 @@ const mongoose = require('mongoose');
 // });
 
 const shortUrlSchema = new mongoose.Schema({
-  original_url: { type: String, required: true },
+  original_url: { type: String, required: true }, // This will store the app's base_url
   short_code: { type: String, required: true, unique: true },
   expires_at: { type: Date },
   metadata: { type: mongoose.Schema.Types.Mixed },
-  app_id: { type: mongoose.Schema.Types.ObjectId, ref: 'App', required: true }
+  app_id: { type: mongoose.Schema.Types.ObjectId, ref: 'App', required: true },
+  target_url: { type: String, required: true } // The URL to redirect to when accessing the short URL
 });
 
 module.exports = mongoose.model('ShortUrl', shortUrlSchema);
@@ -73,17 +74,12 @@ const openapi = {
             "application/json": {
               schema: {
                 type: "object",
-                required: ["original_url", "user_id"],
+                required: ["target_url"],
                 properties: {
-                  original_url: {
+                  target_url: {
                     type: "string",
                     format: "uri",
                     example: "https://example.com"
-                  },
-                  user_id: {
-                    type: "string",
-                    format: "uuid",
-                    example: "123e4567-e89b-12d3-a456-426614174000"
                   },
                   custom_alias: {
                     type: "string",
@@ -127,17 +123,17 @@ const openapi = {
                         original_url: {
                           type: "string",
                           format: "uri",
-                          example: "https://example.com"
+                          example: "https://myapp.com"
                         },
-                        user_id: {
+                        target_url: {
                           type: "string",
-                          format: "uuid",
-                          example: "123e4567-e89b-12d3-a456-426614174000"
+                          format: "uri",
+                          example: "https://example.com"
                         },
                         full_short_url: {
                           type: "string",
                           format: "uri",
-                          example: "http://localhost:8080/example-alias-123e4567"
+                          example: "https://myapp.com/example-alias-123e4567"
                         }
                       }
                     }

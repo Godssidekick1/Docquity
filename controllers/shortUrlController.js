@@ -17,13 +17,13 @@ exports.createShortUrl = async (req, res) => {
     console.log('appContext._id:', appContext._id);
 
     // Read required fields from the request body
-    const { original_url, custom_alias, expires_at, metadata } = req.body;
+    const { target_url, custom_alias, expires_at, metadata } = req.body;
 
     // Validate required fields
-    if (!original_url) {
+    if (!target_url) {
       return res.status(400).json({
         error: 'Validation failed',
-        message: 'The "original_url" field is required.',
+        message: 'The "target_url" field is required.',
       });
     }
 
@@ -33,9 +33,9 @@ exports.createShortUrl = async (req, res) => {
     // Optionally, store custom_alias separately if needed
     const shortUrl = new ShortUrl({
       app_id: appContext._id,
-      original_url,
+      original_url: appContext.base_url, // Use the app's base_url
       short_code,
-      custom_alias, // only if your schema supports this field
+      target_url, // Store the target URL to redirect to
       expires_at,
       metadata,
     });
@@ -48,9 +48,10 @@ exports.createShortUrl = async (req, res) => {
       message: 'Short URL created successfully',
       shortUrl: {
         app_id: shortUrl.app_id,
-        original_url: shortUrl.original_url,
+        original_url: shortUrl.original_url, // The app's base_url
+        target_url: shortUrl.target_url, // The URL to redirect to
         short_code: shortUrl.short_code,
-        full_short_url: `http://localhost:8080/${shortUrl.short_code}`,
+        full_short_url: `${appContext.base_url}/${shortUrl.short_code}`,
         expires_at: shortUrl.expires_at,
         metadata: shortUrl.metadata,
       },
@@ -102,7 +103,7 @@ exports.redirectShortUrl = async (req, res) => {
     if (shortUrl.expires_at && new Date() > shortUrl.expires_at)
       return res.status(410).send('⏳ This short URL has expired');
 
-    res.redirect(shortUrl.original_url);
+    res.redirect(shortUrl.target_url);
   } catch {
     res.status(500).send('Server error');
   }
