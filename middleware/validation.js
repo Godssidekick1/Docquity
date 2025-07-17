@@ -1,7 +1,7 @@
 const validate = (schema) => async (req, res, next) => {
   try {
-    // Validate only req.body
-    await schema.parseAsync(req.body);
+    // Validate both req.params and req.body
+    await schema.parseAsync({ params: req.params, body: req.body });
     return next();
   } catch (error) {
     return res.status(400).json({

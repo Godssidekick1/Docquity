@@ -31,7 +31,7 @@ paths:
   /shorten:
     post:
       summary: Create a new short URL
-      description: Creates a new shortened URL with optional custom alias and required authentication
+      description: Creates a new shortened URL. The original_url will be set to the app's base_url automatically.
       security:
         - bearerAuth: []
       requestBody:
@@ -40,13 +40,7 @@ paths:
           application/json:
             schema:
               type: object
-              required:
-                - original_url
               properties:
-                original_url:
-                  type: string
-                  format: uri
-                  example: "https://example.com"
                 custom_alias:
                   type: string
                   example: "example-alias"
@@ -60,6 +54,7 @@ paths:
                     source:
                       type: string
                       example: "web"
+              required: []
       responses:
         '201':
           description: Short URL created successfully
@@ -77,6 +72,7 @@ paths:
                         type: string
                       original_url:
                         type: string
+                        description: The app's base_url used as the original_url
                       short_code:
                         type: string
                       full_short_url:
@@ -116,6 +112,8 @@ paths:
   /shorten/{id}:
     put:
       summary: Update a short URL
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -150,6 +148,8 @@ paths:
 
     delete:
       summary: Delete a short URL
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -178,6 +178,50 @@ paths:
           description: Short URL not found
         '410':
           description: Short URL has expired
+
+  /shorten/details/{short_code}:
+    get:
+      summary: Get details for a short URL
+      description: Fetch all details for a given short_code. No authentication required.
+      parameters:
+        - name: short_code
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The short code of the URL (e.g., myalias-4f8d2k1z)
+      responses:
+        '200':
+          description: Details of the short URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                  original_url:
+                    type: string
+                  short_code:
+                    type: string
+                  custom_alias:
+                    type: string
+                  expires_at:
+                    type: string
+                  metadata:
+                    type: object
+                  app_id:
+                    type: string
+                  app_name:
+                    type: string
+                    description: Name of the app that created the short URL
+                  app_url:
+                    type: string
+                    description: Base URL of the app that created the short URL
+        '404':
+          description: Short URL not found
+        '400':
+          description: Validation error
 
   /api/apps/register:
     post:
