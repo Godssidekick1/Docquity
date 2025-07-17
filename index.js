@@ -5,6 +5,7 @@ const cors = require('cors');
 
 const userRoutes = require('./routes/userRoutes'); // Import user routes
 const shortUrlRoutes = require('./routes/shortUrlRoutes'); // Import short url routes
+const shortenRoutes = require('./routes/shorten');
 const appRoutes = require('./routes/appRoutes'); // Import app routes
 const redisClient = require('./services/redisClient'); // Import redis client
 const swaggerUi = require('swagger-ui-express'); // Import Swagger UI
@@ -95,7 +96,8 @@ mongoose.connect(process.env.MONGO_URI, {
   app.use('/api/apps', appRoutes); // For registration, no auth
 
   // Use routes
-  app.use('/shorten', shortUrlRoutes); // Auth handled in router
+  app.use('/shorten', shortenRoutes); // For API endpoints
+  app.use('/', shortUrlRoutes); // Mount at root for redirect functionality
   app.use('/', userRoutes); // Use user routes
 
   app.get('/', (req, res) => {

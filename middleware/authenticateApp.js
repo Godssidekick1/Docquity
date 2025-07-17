@@ -1,9 +1,7 @@
 const AppRepository = require('../repositories/AppRepository');
-const ShortUrl = require('../models/ShortUrl'); // Import ShortUrl model
 
 const authenticateApp = async (req, res, next) => {
   try {
-    // Check for the Authorization header
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({
@@ -12,10 +10,7 @@ const authenticateApp = async (req, res, next) => {
       });
     }
 
-    // Extract the token from the Authorization header
     const token = authHeader.split(' ')[1];
-
-    // Find the app by token
     const app = await AppRepository.findByToken(token);
     if (!app) {
       return res.status(401).json({
@@ -24,20 +19,7 @@ const authenticateApp = async (req, res, next) => {
       });
     }
 
-    // Attach the app document to req.appContext
     req.appContext = app;
-
-    // Create a new ShortUrl instance
-    const { original_url, short_code, expires_at, metadata } = req.body; // Assuming these are provided in the request body
-    const shortUrl = new ShortUrl({
-      app_id: app._id, // This is correct
-      original_url,
-      short_code,
-      expires_at,
-      metadata,
-    });
-
-    // Pass control to the next middleware or route handler
     next();
   } catch (error) {
     console.error('Error authenticating app:', error.message);
